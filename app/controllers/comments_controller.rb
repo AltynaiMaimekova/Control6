@@ -1,11 +1,13 @@
 class CommentsController < ApplicationController
   before_action :set_comment, only: [:show, :edit, :update, :destroy]
   before_action :set_post
+  before_action :authenticate_user!, except: [:show, :index]
+  before_action :owned_comment, only: [:edit, :update, :destroy]
 
   # GET /comments
   # GET /comments.json
   def index
-    @comments = Comment.all
+    @comments = Comment.all.order('created_at DESC')
   end
 
   # GET /comments/1
@@ -67,7 +69,7 @@ class CommentsController < ApplicationController
     if @comment.user_id == current_user.id
       @comment.destroy
         respond_to do |format|
-          format.html { redirect_to post_path }
+          format.html { redirect_to post_path(@post) }
           format.js
         end
      end
@@ -86,5 +88,12 @@ class CommentsController < ApplicationController
 
     def set_post
       @post = Post.find(params[:post_id])
+    end
+
+    def owned_comment
+      unless current_user == @comment.user
+        flash[:alert] = "That comment doesn't belong to you!"
+        redirect_to root_path
+      end
     end
 end

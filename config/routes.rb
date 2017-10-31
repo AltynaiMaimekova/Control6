@@ -1,5 +1,7 @@
 Rails.application.routes.draw do
   
+  
+  get ':user_name', to: 'profiles#show', as: :profile
   root "posts#index"
   resources :posts do
   	resources :comments
