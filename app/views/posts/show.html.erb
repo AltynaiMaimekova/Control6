@@ -5,10 +5,33 @@
   <%= @post.caption %>
 </p>
 
+<p><%= image_tag @post.image.url(:medium) %></p>
+
 <p>
   <strong>User:</strong>
-  <%= @post.user %>
+  <%= @post.user.user_name %>
 </p>
+
+
+
+<% if @post.comments %>
+	<% @post.comments.each do |comment| %>
+		<p>By <%= comment.user %>, score: <%= comment.score %></p>
+		<p><%= comment.content %></p>
+		<p>_________________________________________________</p>
+		<p><%= link_to 'Destroy', post_comment_path(comment), method: :delete, data: { confirm: 'Are you sure?' } %></p>
+		
+	<% end %>
+<% end %>
+
+<h2>Add comment:</h2>
+
+ <%= form_for [@post, @post.comments.build] do |f| %>
+  	Text: <%= f.text_field :content %><br>
+  	Score: <%= f.select :score, [5,4,3,2,1] %>
+	<%= f.button :submit %>
+ <% end %> 
+
 
 <%= link_to 'Edit', edit_post_path(@post) %> |
 <%= link_to 'Back', posts_path %>
